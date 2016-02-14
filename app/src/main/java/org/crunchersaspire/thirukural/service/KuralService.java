@@ -27,9 +27,9 @@ public class KuralService
 {
     private ThirukuralApplication thirukuralApplication = new ThirukuralApplication();
 
-    public ArrayAdapter<String> getKuralAdapter(final List<String> kural, final FragmentManager fragmentManager)
+    public ArrayAdapter<String> getKuralAdapter(final List<String> kurals, final FragmentManager fragmentManager)
     {
-        return new ArrayAdapter<String>(thirukuralApplication.getContext(), R.layout.listview_adapter, kural)
+        return new ArrayAdapter<String>(thirukuralApplication.getContext(), R.layout.listview_adapter, kurals)
         {
             @Override
             public View getView(final int position, View convertView, final ViewGroup parent)
@@ -37,15 +37,15 @@ public class KuralService
                 LayoutInflater inflater = (LayoutInflater) thirukuralApplication.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 View rowView = inflater.inflate(R.layout.listview_adapter, parent, false);
                 final TextView textView = (TextView) rowView.findViewById(R.id.kuralTextView);
-                String kuralString = kural.get(position);
+                String kuralString = kurals.get(position);
                 textView.setText(Html.fromHtml(kuralString));
                 (rowView.findViewById(R.id.kuralTextView)).setOnClickListener(new View.OnClickListener()
                 {
                     public void onClick(View arg0)
                     {
-                        //selectedSong = textView.getText().toString();
                         Intent intent = new Intent(thirukuralApplication.getContext(), KuralExplationActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intent.putExtra("position", position);
                         thirukuralApplication.getContext().startActivity(intent);
 
                     }

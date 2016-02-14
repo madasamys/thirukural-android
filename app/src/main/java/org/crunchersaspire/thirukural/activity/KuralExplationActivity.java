@@ -19,9 +19,10 @@ public class KuralExplationActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.kural_explanation);
+        int position = getIntent().getIntExtra("position", 0);
         TextView explantationTextView = (TextView) findViewById(R.id.explanationTextView);
         Resources res = getResources();
         String[] planets = res.getStringArray(R.array.explanation);
-        explantationTextView.setText(Html.fromHtml(planets[0]));
+        explantationTextView.setText(Html.fromHtml(planets[position]));
     }
 }
