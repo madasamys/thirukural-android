@@ -1,0 +1,110 @@
+apply plugin: 'com.android.application'
+
+
+
+android {
+    compileSdkVersion 22
+    buildToolsVersion '22.0.1'
+
+
+
+    defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 22
+        versionCode 1
+        versionName "1.0"
+    }
+    signingConfigs {
+        releaseConfig {
+            //storeFile file("release-nectar-android.jks")
+            storePassword System.getenv("KEYSTORE_PASSWORD")
+            keyAlias System.getenv("KEY_ALIAS")
+            keyPassword System.getenv("KEY_PASSWORD")
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.releaseConfig
+            applicationVariants.all { variant ->
+                variant.outputs.each { output ->
+                    output.outputFile = new File(output.outputFile.parent, "nectar-android-" + defaultConfig.versionName + ".apk")
+                }
+            }
+        }
+        debug {
+            applicationVariants.all { variant ->
+                variant.outputs.each { output ->
+                    output.outputFile = new File(output.outputFile.parent, "nectar-android-" + defaultConfig.versionName + ".apk")
+                }
+            }
+        }
+    }
+
+
+
+
+    lintOptions {
+        abortOnError false
+    }
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES.txt'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/dependencies.txt'
+        exclude 'META-INF/LGPL2.1'
+    }
+    testOptions {
+        unitTests.all {
+            jvmArgs '-XX:MaxPermSize=512m'
+        }
+    }
+}
+
+sourceSets {
+    unitTest {
+        java.srcDir file('test')
+        resources.srcDir file('test/resources')
+    }
+}
+
+repositories {
+    maven { url "https://jitpack.io" }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile 'com.android.support:appcompat-v7:22.2.0'
+    compile "com.android.support:support-v4:22.2.0"
+
+    unitTestCompile files("$project.buildDir/classes/release")
+    provided 'junit:junit:4.10'
+    testCompile "org.robolectric:robolectric:3.0-rc3"
+}
+
+configurations {
+    unitTestCompile.extendsFrom runtime
+    unitTestRuntime.extendsFrom unitTestCompile
+}
+
+task unitTest(type: Test, dependsOn: assemble) {
+    description = "run unit tests"
+    testClassesDir = project.sourceSets.unitTest.output.classesDir
+    classpath = project.sourceSets.unitTest.runtimeClasspath
+    maxHeapSize = "512m"
+}
+
+build.dependsOn unitTest
+
+
+
+
+
+
+
